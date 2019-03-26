@@ -2,18 +2,45 @@ export default class Slide {
     constructor(slide, wrapper) {
         this.slide = document.querySelector(slide);
         this.wrapper = document.querySelector(wrapper);
+        this.position = {
+            startX: 0,
+            endX: 0,
+            movement: 0 
+        }
+    }
+    get minMove() {
+        return 100;
     }
 
     
     onStart(event) {
         event.preventDefault();
         this.wrapper.addEventListener('mousemove', this.onMove);
+        this.position.startX = event.clientX;
     }
     onMove(event) {
-        console.log("moveu");
+        this.position.movement = event.clientX - this.position.startX;
+        this.slide.style.transform = `translate3d(${this.position.movement}px, 0px, 0px)`;
+        console.log(this.position.movement);
+
+        
+        this.position.movement = this.position.endX - this.position.movement;
     }
     onEnd(event) {
         this.wrapper.removeEventListener('mousemove', this.onMove);
+        this.position.endX = event.clientX;
+        
+        /*this.position.movement = this.position.endX - this.position.startX;
+        if(Math.abs(this.position.movement) > this.minMove) {
+            this.changeSlideImage();
+        }*/
+    }
+    changeSlideImage() {
+        if (this.position.movement > 0) {
+            console.log("move left");
+        } else {
+            console.log("move right");
+        }
     }
 
     /**
@@ -40,15 +67,3 @@ export default class Slide {
         return this; // Permite encadeamento de metodos
     }
 }
-
-
-
-/* Logica do slide com evento de mouse
-1) clica e segura na image () e depois move (move)
-    1) move pra direita (antigo < novo): 
-        1) x = decrementa translate3d[0]
-        2) x > y (valor minimo) ? decrementa o tamanho da img
-    2) move pra esquerda (antigo > novo): incrmenta
-        1) x = incrmenta translate3d[0]
-        2) x > y (valor minimo) ? incrmenta o tamanho da img
-*/
