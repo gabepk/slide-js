@@ -1,0 +1,32 @@
+/* Reseta estilos default do browser */
+body {
+    margin: 0px;
+}
+
+ul {
+    padding: 0px;
+    margin: 0px;
+    list-style: none;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+/* Estilos do slide */
+.slide {
+    display: flex;
+}
+
+.slide li {
+    flex-shrink: 0; /* Imagens nao encolhem pra caber na tela */
+    width: 80vw; /* 80 virtual width*/
+    max-width: 800px;
+    margin: 0 20px;
+}
+
+/* Movendo images */
+.slide {
+    transform: translate3d(-200px, 0px, 0px); /* Inicia no primeiro slide*/
+}
