@@ -3,8 +3,9 @@ export default class Slide {
         this.slide = document.querySelector(slide);
         this.wrapper = document.querySelector(wrapper);
         this.position = {
-            startX: 0,
-            endX: 0,
+            origin: 0,
+            clickStartX: 0,
+            clickEndX: 0,
             movement: 0 
         }
     }
@@ -20,20 +21,18 @@ export default class Slide {
     }
     onMove(event) {
         this.position.movement = event.clientX - this.position.startX;
-        this.slide.style.transform = `translate3d(${this.position.movement}px, 0px, 0px)`;
-        console.log(this.position.movement);
-
-        
-        this.position.movement = this.position.endX - this.position.movement;
+        const tx = (this.position.origin + this.position.movement) * 1.5;
+        this.slide.style.transform = `translate3d(${tx}px, 0px, 0px)`;
     }
     onEnd(event) {
         this.wrapper.removeEventListener('mousemove', this.onMove);
-        this.position.endX = event.clientX;
+        this.position.origin += event.clientX - this.position.startX;
         
-        /*this.position.movement = this.position.endX - this.position.startX;
         if(Math.abs(this.position.movement) > this.minMove) {
             this.changeSlideImage();
-        }*/
+        } else {
+            console.log("mesma imagem");
+        }
     }
     changeSlideImage() {
         if (this.position.movement > 0) {
