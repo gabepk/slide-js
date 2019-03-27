@@ -37,7 +37,7 @@ export default class Slide {
 
         const origin = (event.type == 'mouseup') ? 
             event.clientX : event.changedTouches[0].clientX;
-        this.position.origin += event.clientX - this.position.startX;
+        this.position.origin += origin - this.position.startX;
         
         if(Math.abs(this.position.movement) > this.minMove) {
             this.changeSlideImage();
