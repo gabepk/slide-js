@@ -2,18 +2,55 @@ export default class Slide {
     constructor(slide, wrapper) {
         this.slide = document.querySelector(slide);
         this.wrapper = document.querySelector(wrapper);
+        this.position = {
+            origin: 0,
+            clickStartX: 0,
+            clickEndX: 0,
+            movement: 0 
+        }
+    }
+    get minMove() {
+        return 100;
     }
 
     
     onStart(event) {
-        event.preventDefault();
-        this.wrapper.addEventListener('mousemove', this.onMove);
+        if (event.type === 'mousedown') {
+            event.preventDefault();
+            this.position.startX = event.clientX;
+            this.wrapper.addEventListener('mousemove', this.onMove);
+        } else {
+            this.position.startX = event.changedTouches[0].clientX;
+            this.wrapper.addEventListener('touchmove', this.onMove);
+        }
     }
     onMove(event) {
-        console.log("moveu");
+        const pointerPosition = (event.type == 'mousemove') ? 
+            event.clientX : event.changedTouches[0].clientX;
+        this.position.movement = pointerPosition - this.position.startX;
+        
+        const tx = (this.position.origin + this.position.movement) * 1.5;
+        this.slide.style.transform = `translate3d(${tx}px, 0px, 0px)`;
     }
     onEnd(event) {
         this.wrapper.removeEventListener('mousemove', this.onMove);
+
+        const origin = (event.type == 'mouseup') ? 
+            event.clientX : event.changedTouches[0].clientX;
+        this.position.origin += origin - this.position.startX;
+        
+        if(Math.abs(this.position.movement) > this.minMove) {
+            this.changeSlideImage();
+        } else {
+            console.log("mesma imagem");
+        }
+    }
+    changeSlideImage() {
+        if (this.position.movement > 0) {
+            console.log("move left");
+        } else {
+            console.log("move right");
+        }
     }
 
     /**
@@ -21,7 +58,9 @@ export default class Slide {
      */
     addSlideEvents() {
         this.wrapper.addEventListener('mousedown', this.onStart);
+        this.wrapper.addEventListener('touchstart', this.onStart);
         this.wrapper.addEventListener('mouseup', this.onEnd);
+        this.wrapper.addEventListener('touchend', this.onEnd);
     }
 
     /**
@@ -40,15 +79,3 @@ export default class Slide {
         return this; // Permite encadeamento de metodos
     }
 }
-
-
-
-/* Logica do slide com evento de mouse
-1) clica e segura na image () e depois move (move)
-    1) move pra direita (antigo < novo): 
-        1) x = decrementa translate3d[0]
-        2) x > y (valor minimo) ? decrementa o tamanho da img
-    2) move pra esquerda (antigo > novo): incrmenta
-        1) x = incrmenta translate3d[0]
-        2) x > y (valor minimo) ? incrmenta o tamanho da img
-*/
