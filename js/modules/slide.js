@@ -30,7 +30,7 @@ export default class Slide {
         this.position.movement = pointerPosition - this.position.startX;
         
         const tx = (this.position.origin + this.position.movement) * 1.5;
-        this.slide.style.transform = `translate3d(${tx}px, 0px, 0px)`;
+        this.moveSlide(tx);
     }
     onEnd(event) {
         this.wrapper.removeEventListener('mousemove', this.onMove);
@@ -40,22 +40,36 @@ export default class Slide {
         this.position.origin += origin - this.position.startX;
         
         if(Math.abs(this.position.movement) > this.minMove) {
-            this.changeSlideImage();
+            //this.changeSlideImage();
         } else {
             console.log("mesma imagem");
         }
     }
-    changeSlideImage() {
+    moveSlide(tx) {
+        this.slide.style.transform = `translate3d(${tx}px, 0px, 0px)`;
+    }
+    /*changeSlideImage() {
         if (this.position.movement > 0) {
             console.log("move left");
         } else {
             console.log("move right");
         }
+    }*/
+    slideIndexNav(index) {
+        this.index = {
+            prev: (6 + index - 1)%6,
+            active: index,
+            next: (index + 1)%6
+        }
+        console.log(this.index);
+    }
+    changeSlide(index) {
+        const activeSlide = this.slideArray[index];
+        this.moveSlide(activeSlide.position);
+        this.slideIndexNav(index);
+        this.position.origin = 100 + activeSlide.position;
     }
 
-    /**
-     * Adiciona cada evento no Slide
-     */
     addSlideEvents() {
         this.wrapper.addEventListener('mousedown', this.onStart);
         this.wrapper.addEventListener('touchstart', this.onStart);
@@ -63,14 +77,28 @@ export default class Slide {
         this.wrapper.addEventListener('touchend', this.onEnd);
     }
 
-    /**
-     * Faz o 'this' dentro dos eventos referenciar o objeto slide
-     * inves do elemento HTML
-     */
+    // 'this' referencia o objeto slide inves do elemento HTML
     bindEvents() {
         this.onStart = this.onStart.bind(this);
         this.onMove = this.onMove.bind(this);
         this.onEnd = this.onEnd.bind(this);
+    }
+
+    slidePosition(slide) {
+        const margin = (this.wrapper.offsetWidth - slide.offsetWidth) / 2;
+        return -(slide.offsetLeft - margin);
+    }
+
+    slideConfig() {
+        this.slideArray = [...this.slide.children].map(element => {
+            
+            const position = this.slidePosition(element);
+            return {
+                element,
+                position
+            }
+        });
+        console.log(this.slideArray);
     }
 
     init() {
